@@ -16,9 +16,16 @@
 
     <!--继承自父工程的依赖-->
     <dependencies>
+        <!--spring web依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--spring test依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <!--nacos依赖-->
         <dependency>
