@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>shuyx-admin-services</artifactId>
+        <groupId>com.shuyx</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>shuyx-file</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>shuyx-file</name>
+    <description>shuyx-file</description>
+    <!--子工程的打包方式-->
+    <packaging>jar</packaging>
+
+    <!--继承自父工程的依赖-->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!--nacos依赖-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--对象存储minio依赖-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.2.2</version>
+        </dependency>
+        <!--公共模块依赖-->
+        <dependency>
+            <groupId>com.shuyx</groupId>
+            <artifactId>shuyx-commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+</project>

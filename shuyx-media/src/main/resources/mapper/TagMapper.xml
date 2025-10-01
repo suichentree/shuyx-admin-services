@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuyx.shuyxmedia.mapper.TagMapper">
+    <select id="findTagByMediaId">
+        SELECT g.tag_id , g.tag_name , g.tag_type FROM t_tag g LEFT JOIN t_media_tag mg on g.tag_id = mg.tag_id
+        <where>
+            mg.media_id = #{mediaId}
+        </where>
+    </select>
+</mapper>
