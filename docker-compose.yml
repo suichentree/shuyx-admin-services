@@ -1,0 +1,89 @@
+# services 配置。用于定义每个服务（即容器）的配置信息，包括服务名称、镜像、端口映射、环境变量等。
+services:
+  # Redis缓存数据库
+  redis-service:
+    # 指定容器名称（不推荐使用，容器扩容的时候不方便）如果不设置此参数，则由系统按照"项目名称-服务名称-序号"的格式自动生成
+    # container_name: mysql_container
+    # 容器使用到的镜像
+    image: redis:7.2.3-alpine
+    # 设置容器环境变量
+    environment:  
+      - TZ=Asia/Shanghai            # 设置容器时区与宿主机保持一致
+    # 设置容器重启策略（always：总是重启，on-failure：失败时重启，never：从不重启）
+    restart: always
+    # 设置容器特权模式，用于访问宿主机的设备和网络
+    privileged: true
+    # 设置容器数据卷映射(宿主机目录:容器目录)
+    volumes:
+      - /e/DockerVolumes/redis/data:/data
+      - /e/DockerVolumes/redis/conf/redis.conf:/etc/redis/redis.conf
+    # 设置容器运行后的启动命令
+    command: redis-server /etc/redis/redis.conf
+    # 设置容器端口映射（宿主机端口:容器端口）
+    ports:
+      - "36379:6379"
+    # 设置容器使用的网络
+    networks:
+      - shuyx_network
+
+  # MySQL数据库
+  mysql-service:
+    image: mysql:8.0.20
+    # 容器启动命令，设置utf8字符集
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456                              # 设置 root 用户密码
+    volumes:
+        - '/e/DockerVolumes/mysql/conf.d:/etc/mysql/conf.d'
+        - '/e/DockerVolumes/mysql/data:/var/lib/mysql'
+        - '/e/DockerVolumes/mysql/log:/var/log/mysql'
+    ports:
+      - "33306:3306"
+    restart: always
+    networks:
+      - shuyx_network
+
+  # Nacos服务注册中心
+  nacos-service:
+    environment:
+        - MODE=standalone
+    ports:
+        - 38848:8848
+        - 39848:9848
+        - 39849:9849
+    volumes:
+        - /e/DockerVolumes/nacos/logs:/home/nacos/logs
+    image: nacos/nacos-server:v2.1.1-slim
+    networks:
+        - shuyx_network
+
+  # MinIO对象存储
+  minio-service:
+    ports:
+        - 39000:9000
+        - 39001:9001
+    volumes:
+        - /e/DockerVolumes/minio/data:/data
+    environment:
+        - MINIO_ROOT_USER=minio
+        - MINIO_ROOT_PASSWORD=minio123
+    image: minio/minio:RELEASE.2024-03-10T02-53-48Z
+    command: server /data --console-address ":9001"
+    networks:
+        - shuyx_network
+
+  # 用户服务
+  shuyx-user-service:
+    # build 指令用于指定对应的Dockerfile文件路径。
+    build: ./shuyx-user
+    ports: ["38081:38081"]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos-service:38848
+    # 服务依赖关系，其他服务启动完成后才会启动
+    depends_on: [nacos-service, mysql-service, redis-service, minio-service]
+    networks:
+        - shuyx_network
+
+
+# networks配置，用于设置docker网络
+networks:
+  shuyx_network:    # 创建一个名为shuyx_network的网络 
