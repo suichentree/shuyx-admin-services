@@ -73,12 +73,48 @@ services:
 
   # 用户服务
   shuyx-user-service:
-    # build 指令用于指定对应的Dockerfile文件路径。
+    # build 用于指定对应的Dockerfile文件路径。
     build: ./shuyx-user
+    # image 用于指定对应的Dockerfile文件产生的容器镜像名称和标签。
+    image: shuyx-user-service:v1.0
     ports: ["38081:38081"]
     environment:
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos-service:38848
+      # 容器与容器之间通信使用的是容器内端口而非宿主机映射端口
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
     # 服务依赖关系，其他服务启动完成后才会启动
+    depends_on: [nacos-service, mysql-service, redis-service, minio-service]
+    networks:
+        - shuyx_network
+
+  # 媒体服务
+  shuyx-media-service:
+    build: ./shuyx-media
+    image: shuyx-media-service:v1.0
+    ports: [ "38070:38070" ]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
+    depends_on: [ nacos-service, mysql-service, redis-service, minio-service ]
+    networks:
+      - shuyx_network
+
+  # 网关服务
+  shuyx-gateway-service:
+    build: ./shuyx-gateway
+    image: shuyx-gateway-service:v1.0
+    ports: [ "38080:38080" ]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
+    depends_on: [ nacos-service, mysql-service, redis-service, minio-service ]
+    networks:
+      - shuyx_network
+
+  # 文件服务
+  shuyx-file-service:
+    build: ./shuyx-file
+    image: shuyx-file-service:v1.0
+    ports: ["38090:38090"]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
     depends_on: [nacos-service, mysql-service, redis-service, minio-service]
     networks:
         - shuyx_network

@@ -14,13 +14,13 @@
     <!--父工程的打包方式设置为pom-->
     <packaging>pom</packaging>
 
-    <!--子模块-->
+    <!--子模块，按照顺序来。由于shuyx-commons 是公共模块，所以要放在第一个-->
     <modules>
-        <module>shuyx-gateway</module>
+        <module>shuyx-commons</module>
         <module>shuyx-user</module>
         <module>shuyx-media</module>
-        <module>shuyx-commons</module>
         <module>shuyx-file</module>
+        <module>shuyx-gateway</module>
     </modules>
 
     <!--父工程 dependencies 依赖，此处为公共依赖。会被子工程继承。-->
@@ -123,24 +123,28 @@
         </dependencies>
     </dependencyManagement>
 
+    <!-- 管理插件版本（子模块可直接引用，无需重复写version） -->
     <build>
-        <plugins>
-            <!--spring-boot-maven-plugin插件，可以将项目打包成可执行jar包。-->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.3.12.RELEASE</version>
-            </plugin>
-            <!-- 编译插件，配置JDK版本为8 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement> <!-- pluginManagement：仅声明版本，不实际执行插件 -->
+            <plugins>
+                <!-- 1. 编译插件：指定Java版本 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>8</source> <!-- 源码版本 -->
+                        <target>8</target> <!-- 编译目标版本 -->
+                    </configuration>
+                </plugin>
+
+                <!-- 2. Spring Boot打包插件（用于可执行模块） -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>2.3.12.RELEASE</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>

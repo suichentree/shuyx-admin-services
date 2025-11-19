@@ -47,4 +47,30 @@
         </dependency>
     </dependencies>
 
+    <!-- 核心：配置Spring Boot打包插件，生成可执行Jar -->
+    <build>
+        <plugins>
+            <!-- 1. 编译插件（继承父工程版本和配置） -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <!-- 2. Spring Boot打包插件（核心） -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- 版本继承自父工程的spring-boot-starter-parent -->
+
+                <!-- 关键：绑定repackage目标，将普通Jar转为可执行Jar -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal> <!-- 重新打包：添加主清单属性和启动类 -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

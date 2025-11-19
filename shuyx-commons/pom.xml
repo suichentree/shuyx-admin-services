@@ -28,4 +28,14 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- 仅需编译插件（版本继承自父工程） -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
