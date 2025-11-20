@@ -32,10 +32,11 @@ services:
     # 容器启动命令，设置utf8字符集
     environment:
       - MYSQL_ROOT_PASSWORD=123456                              # 设置 root 用户密码
+      - TZ=Asia/Shanghai                                        # 添加时区配置
     volumes:
-        - '/e/DockerVolumes/mysql/conf.d:/etc/mysql/conf.d'
-        - '/e/DockerVolumes/mysql/data:/var/lib/mysql'
-        - '/e/DockerVolumes/mysql/log:/var/log/mysql'
+        - /e/DockerVolumes/mysql/conf.d:/etc/mysql/conf.d
+        - /e/DockerVolumes/mysql/data:/var/lib/mysql
+        - /e/DockerVolumes/mysql/log:/var/log/mysql
     ports:
       - "33306:3306"
     restart: always
@@ -46,13 +47,16 @@ services:
   nacos-service:
     environment:
         - MODE=standalone
+        - TZ=Asia/Shanghai                                        # 添加时区配置
     ports:
         - 38848:8848
         - 39848:9848
         - 39849:9849
     volumes:
-        - /e/DockerVolumes/nacos/logs:/home/nacos/logs
+        - /e/DockerVolumes/nacos/logs:/home/nacos/logs  # 日志持久化
+        - /e/DockerVolumes/nacos/data:/home/nacos/data  # 数据持久化
     image: nacos/nacos-server:v2.1.1-slim
+    restart: always
     networks:
         - shuyx_network
 
@@ -79,8 +83,12 @@ services:
     image: shuyx-user-service:v1.0
     ports: ["38081:38081"]
     environment:
-      # 容器与容器之间通信使用的是容器内端口而非宿主机映射端口
+      - TZ=Asia/Shanghai              # 添加时区配置
+      # 容器与容器之间通信使用的是容器内端口而非宿主机映射端口。注意此处的配置会覆盖服务中的配置文件中的同名配置。
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-service:3306/shuyx_db?useSSL=true&serverTimezone=GMT%2B8 # serverTimezone=GMT%2B8 东八区时间
+      - SPRING_REDIS_HOST=redis-service
+      - SPRING_REDIS_PORT=6379
     # 服务依赖关系，其他服务启动完成后才会启动
     depends_on: [nacos-service, mysql-service, redis-service, minio-service]
     networks:
@@ -93,6 +101,9 @@ services:
     ports: [ "38070:38070" ]
     environment:
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-service:3306/shuyx_db?useSSL=true&serverTimezone=GMT%2B8 # serverTimezone=GMT%2B8 东八区时间
+      - SPRING_REDIS_HOST=redis-service
+      - SPRING_REDIS_PORT=6379
     depends_on: [ nacos-service, mysql-service, redis-service, minio-service ]
     networks:
       - shuyx_network
@@ -115,6 +126,7 @@ services:
     ports: ["38090:38090"]
     environment:
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
+      - MINIO_URL=http://minio-service:9000
     depends_on: [nacos-service, mysql-service, redis-service, minio-service]
     networks:
         - shuyx_network
