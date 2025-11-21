@@ -3,7 +3,7 @@ services:
   # Redis缓存数据库
   redis-service:
     # 指定容器名称（不推荐使用，容器扩容的时候不方便）如果不设置此参数，则由系统按照"项目名称-服务名称-序号"的格式自动生成
-    # container_name: mysql_container
+    # container_name: redis_container_1
     # 容器使用到的镜像
     image: redis:7.2.3-alpine
     # 设置容器环境变量
@@ -80,7 +80,7 @@ services:
     # build 用于指定对应的Dockerfile文件路径。
     build: ./shuyx-user
     # image 用于指定对应的Dockerfile文件产生的容器镜像名称和标签。
-    image: shuyx-user-service:v1.0
+    image: shuyx-user-service:v2.0
     ports: ["38081:38081"]
     environment:
       - TZ=Asia/Shanghai              # 添加时区配置
@@ -97,7 +97,7 @@ services:
   # 媒体服务
   shuyx-media-service:
     build: ./shuyx-media
-    image: shuyx-media-service:v1.0
+    image: shuyx-media-service:v2.0
     ports: [ "38070:38070" ]
     environment:
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
@@ -111,7 +111,7 @@ services:
   # 网关服务
   shuyx-gateway-service:
     build: ./shuyx-gateway
-    image: shuyx-gateway-service:v1.0
+    image: shuyx-gateway-service:v2.0
     ports: [ "38080:38080" ]
     environment:
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
@@ -122,7 +122,7 @@ services:
   # 文件服务
   shuyx-file-service:
     build: ./shuyx-file
-    image: shuyx-file-service:v1.0
+    image: shuyx-file-service:v2.0
     ports: ["38090:38090"]
     environment:
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos-service:8848
